@@ -1,15 +1,13 @@
 {
-  "version": 2,
-  "buildCommand": "node build.mjs",
-  "outputDirectory": "dist",
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
   "framework": "vite",
-  "routes": [
+  "outputDirectory": "dist",
+  "rewrites": [
     {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/.*",
-      "dest": "/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 } 
