@@ -2,31 +2,37 @@ import { supabase } from '../lib/supabase'
 
 export const auth = {
   async signUp({ email, password, name }) {
-    // First attempt to sign up
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          name,
-        },
+    try {
+      // Sign up the user
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            name,
+          },
+          emailRedirectTo: window.location.origin,
+        }
+      })
+      
+      if (signUpError) throw signUpError
+
+      // Immediately try to sign in
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+      
+      if (signInError) throw signInError
+      
+      return {
+        session: signInData.session,
+        user: signInData.user
       }
-    })
-    if (error) throw error
-    
-    // If we get a session back, the user is automatically signed in
-    if (data?.session) {
-      return { session: data.session, user: data.user }
+    } catch (error) {
+      console.error('Auth error:', error)
+      throw error
     }
-    
-    // If we don't get a session, try to sign in immediately
-    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    })
-    
-    if (signInError) throw signInError
-    return signInData
   },
 
   async signIn({ email, password }) {
