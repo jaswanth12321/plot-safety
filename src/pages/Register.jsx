@@ -33,12 +33,18 @@ const Register = () => {
     }
 
     try {
-      const { data } = await auth.signUp({
+      const { session } = await auth.signUp({
         email: formData.email,
         password: formData.password,
         name: formData.name,
       });
-      navigate('/login', { state: { message: 'Please check your email to verify your account.' } });
+      
+      // User is automatically signed in, redirect to dashboard
+      if (session) {
+        navigate('/dashboard');
+      } else {
+        throw new Error('Failed to create account');
+      }
     } catch (err) {
       setError(err.message);
     } finally {
